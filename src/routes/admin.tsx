@@ -274,15 +274,16 @@ function PublicationManager() {
 }
 
 /* tiny inputs */
-function Field({ label, value, onChange, type = "text" }: any) {
+type FieldProps = { label: string; value: string; onChange: (v: string) => void; type?: string };
+function Field({ label, value, onChange, type = "text" }: FieldProps) {
   return (<label className="block"><span className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--forest)]/65">{label}</span>
     <input type={type} value={value} onChange={e => onChange(e.target.value)} className="mt-1 w-full bg-transparent border-b border-[color:var(--forest)]/30 focus:border-[color:var(--terracotta)] outline-none py-1.5 text-sm" /></label>);
 }
-function Area({ label, value, onChange, rows = 4 }: any) {
+function Area({ label, value, onChange, rows = 4 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
   return (<label className="block"><span className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--forest)]/65">{label}</span>
     <textarea rows={rows} value={value} onChange={e => onChange(e.target.value)} className="mt-1 w-full bg-[color:var(--cream)]/50 border border-[color:var(--forest)]/20 focus:border-[color:var(--terracotta)] outline-none p-2 text-sm rounded-sm resize-none" /></label>);
 }
-function FileField({ label = "File", onChange, accept, current }: any) {
+function FileField({ label = "File", onChange, accept, current }: { label?: string; onChange: (f: File | null) => void; accept?: string; current?: string }) {
   return (<label className="block"><span className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--forest)]/65">{label}</span>
     <div className="mt-1 flex items-center gap-2">
       <input type="file" accept={accept} onChange={e => onChange(e.target.files?.[0] || null)} className="text-sm file:mr-3 file:rounded-full file:border-0 file:bg-[color:var(--forest)] file:text-[color:var(--cream)] file:px-3 file:py-1.5 file:text-xs file:hover:bg-[color:var(--terracotta)]" />
