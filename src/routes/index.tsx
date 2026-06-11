@@ -35,8 +35,8 @@ function Index() {
 /* ─── shared ─── */
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.2, 0.7, 0.2, 1] } },
-};
+  show: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.2, 0.7, 0.2, 1] as const } },
+} as const;
 
 function PlateNumber({ n }: { n: string }) {
   return (
