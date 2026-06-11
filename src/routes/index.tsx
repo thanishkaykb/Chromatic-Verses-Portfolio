@@ -33,10 +33,7 @@ function Index() {
 }
 
 /* ─── shared ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.2, 0.7, 0.2, 1] as const } },
-} as const;
+// (motion variants inlined per-element to keep framer-motion types happy)
 
 function PlateNumber({ n }: { n: string }) {
   return (
@@ -118,7 +115,7 @@ function Cover() {
         </div>
 
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mt-16 lg:mt-24 items-end">
-          <motion.div initial="hidden" animate="show" variants={fadeUp} className="lg:col-span-7">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.2, 0.7, 0.2, 1] }} className="lg:col-span-7">
             <p className="font-[Italianno] text-4xl text-[#c97b5e] leading-none mb-6">— the world of —</p>
             <h1 className="font-[Cormorant_Garamond] font-light text-[clamp(4.5rem,13vw,12rem)] leading-[0.85] tracking-[-0.02em] text-[#1f2d24]">
               Thanishka
