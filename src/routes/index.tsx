@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { Mail, Instagram, ArrowUpRight } from "lucide-react";
-import heroPainting from "@/assets/hero-painting.jpg";
-import heroPortrait from "@/assets/hero-portrait.jpg";
+import { Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
+import portraitAsset from "@/assets/portrait-garden.jpg.asset.json";
+import { Floral, Leaf, Splash, InkSwirl, Sparkle, Divider } from "@/components/site/decor";
+import { Polaroid } from "@/components/site/polaroid";
+import { useArtworks, usePoems, usePublications, publicUrl } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,16 +20,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const arts = useArtworks();
+  const poems = usePoems();
+  const pubs = usePublications();
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#e8e1d3] text-[#1f2d24]">
-      <Nav />
+    <div className="overflow-x-hidden">
       <Cover />
-      <Index_Contents />
-      <Works />
-      <PoetryPlate />
-      <Publications />
-      <Memories />
-      <Colophon />
+      <Marquee />
+      <FeaturedWorks items={arts.data?.slice(0, 6) ?? []} />
+      <PoetryTease items={poems.data?.slice(0, 3) ?? []} />
+      <PublishedTease items={pubs.data?.slice(0, 4) ?? []} />
+      <PolaroidStrip />
+      <ClosingCard />
     </div>
   );
 }
@@ -35,361 +39,243 @@ function Index() {
 /* ─── shared ─── */
 // (motion variants inlined per-element to keep framer-motion types happy)
 
-function PlateNumber({ n }: { n: string }) {
+/* ─── cover ─── */
+function Cover() {
   return (
-    <span className="font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/60">
-      Plate · {n}
-    </span>
+    <section className="relative min-h-[92vh] pt-12 pb-20 px-6 lg:px-12 overflow-hidden">
+      {/* decorative scatter */}
+      <Leaf className="absolute -left-10 top-10 w-44 text-[color:var(--sage)]/55 animate-floaty" style={{ ["--r" as any]: "-12deg", transform: "rotate(-12deg)" }} />
+      <Leaf className="absolute right-4 top-32 w-32 text-[color:var(--forest)]/35 animate-floaty" style={{ ["--r" as any]: "20deg", transform: "rotate(20deg)", animationDelay: "1.5s" }} />
+      <Floral className="absolute left-1/3 top-6 w-20 text-[color:var(--rose)]/55 animate-floaty" />
+      <Splash className="absolute -bottom-20 -right-20 w-[420px] text-[color:var(--terracotta)]" />
+      <Sparkle className="absolute top-24 left-1/2 w-4 text-[color:var(--gold)] animate-pulse" />
+
+      <div className="max-w-[1500px] mx-auto relative">
+        <div className="flex items-center justify-between border-y border-[color:var(--forest)]/20 py-3 text-[10px] tracking-[0.35em] uppercase text-[color:var(--forest)]/65">
+          <span>Vol. I · {new Date().getFullYear()}</span>
+          <span className="hidden md:inline">Paintings · Verse · Published Corner · Memories</span>
+          <span>Edition of One</span>
+        </div>
+
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mt-12 lg:mt-16 items-center">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="lg:col-span-7 relative">
+            <p className="font-script text-5xl text-[color:var(--terracotta)] leading-none mb-4">— welcome to the world of —</p>
+            <h1 className="font-display font-light text-[clamp(4rem,12vw,10.5rem)] leading-[0.85] tracking-tight text-[color:var(--forest)]">
+              Thanishka
+              <span className="block italic text-gold-shimmer">Yogesh</span>
+            </h1>
+            <InkSwirl className="w-72 text-[color:var(--terracotta)] mt-4" />
+            <p className="mt-6 font-display italic text-2xl text-[color:var(--forest)]/85 max-w-xl leading-snug">
+              Artist · Published Poet · Storyteller — keeping a slow, ongoing record of colour, verse, and quiet things.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link to="/artworks" className="group inline-flex items-center gap-2 bg-[color:var(--forest)] text-[color:var(--cream)] px-7 py-3.5 rounded-full font-display italic text-lg hover:bg-[color:var(--terracotta)] transition-colors">
+                Wander the gallery <ArrowUpRight className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+              <Link to="/poetry" className="group inline-flex items-center gap-2 border border-[color:var(--forest)]/40 px-7 py-3.5 rounded-full font-display italic text-lg text-[color:var(--forest)] hover:bg-[color:var(--forest)] hover:text-[color:var(--cream)] transition-colors">
+                Read the poetry
+              </Link>
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.1, delay: 0.2 }} className="lg:col-span-5 relative">
+            <div className="relative">
+              <Floral className="absolute -top-10 -left-10 w-24 text-[color:var(--gold)]/70 animate-floaty" />
+              <Floral className="absolute -bottom-8 -right-8 w-28 text-[color:var(--coral)]/60 animate-floaty" style={{ animationDelay: "2s" }} />
+              <figure className="relative">
+                <img src={portraitAsset.url} alt="Thanishka in the garden" className="w-full aspect-[4/5] object-cover rounded-sm shadow-[var(--shadow-frame)]" />
+                <div className="absolute inset-3 border border-[color:var(--cream)]/40 pointer-events-none" />
+                <Polaroid src={portraitAsset.url} caption="in the green house ✿" rotate={-8} className="!absolute -bottom-10 -left-12 w-40 hidden md:inline-block" />
+              </figure>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 }
 
-function PlaceholderPlate({ ratio = "aspect-[3/4]", label }: { ratio?: string; label?: string }) {
+/* ── marquee ribbon ── */
+function Marquee() {
+  const words = ["paintings", "✿", "poetry", "❀", "published in newspapers", "✦", "literary anthologies", "❀", "handmade creations", "✿"];
   return (
-    <div className={`relative ${ratio} overflow-hidden bg-[#d8cdb8]`}>
-      <div
-        className="absolute inset-0 opacity-70"
-        style={{
-          background:
-            "radial-gradient(120% 80% at 30% 20%, rgba(201,123,94,0.35), transparent 55%), radial-gradient(120% 80% at 80% 80%, rgba(31,45,36,0.35), transparent 55%), repeating-linear-gradient(0deg, rgba(31,45,36,0.04) 0 2px, transparent 2px 5px)",
-        }}
-      />
-      <div className="absolute inset-3 border border-[#1f2d24]/15" />
-      {label && (
-        <span className="absolute bottom-3 left-4 font-[Inter] text-[10px] tracking-[0.3em] uppercase text-[#1f2d24]/55">
-          {label}
-        </span>
-      )}
+    <div className="border-y border-[color:var(--forest)]/15 bg-[color:var(--forest)] text-[color:var(--cream)] py-4 overflow-hidden">
+      <div className="marquee whitespace-nowrap font-display italic text-2xl">
+        {[...words, ...words, ...words].map((w, i) => <span key={i} className="mx-6">{w}</span>)}
+      </div>
     </div>
   );
 }
 
-/* ─── nav ─── */
-function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const f = () => setScrolled(window.scrollY > 40);
-    f();
-    window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
-  }, []);
-  const items = [
-    ["01", "Works", "#works"],
-    ["02", "Poetry", "#poetry"],
-    ["03", "Publications", "#publications"],
-    ["04", "Memories", "#memories"],
-    ["05", "Colophon", "#colophon"],
-  ];
+/* ── featured works grid (with link to full gallery) ── */
+function FeaturedWorks({ items }: { items: ReturnType<typeof useArtworks>["data"] extends infer T ? T extends Array<infer U> ? U[] : never : never }) {
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? "bg-[#e8e1d3]/85 backdrop-blur-md border-b border-[#1f2d24]/10" : ""}`}>
-      <div className="max-w-[1500px] mx-auto px-8 lg:px-14 py-5 flex items-center justify-between">
-        <a href="#cover" className="flex items-baseline gap-2">
-          <span className="font-[Italianno] text-3xl text-[#1f2d24] leading-none">Thanishka</span>
-          <span className="hidden sm:inline font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/55">— Monograph No. 01</span>
-        </a>
-        <nav className="hidden lg:flex items-center gap-9">
-          {items.map(([n, l, h]) => (
-            <a key={h} href={h} className="group flex items-baseline gap-2 text-[#1f2d24]/80 hover:text-[#c97b5e] transition-colors">
-              <span className="font-[Inter] text-[10px] tracking-[0.3em] text-[#1f2d24]/45 group-hover:text-[#c97b5e]/70">{n}</span>
-              <span className="font-[Cormorant_Garamond] text-lg italic">{l}</span>
-            </a>
-          ))}
-        </nav>
-        <a href="#colophon" className="font-[Inter] text-[11px] tracking-[0.3em] uppercase text-[#1f2d24]/80 hover:text-[#c97b5e]">
-          Correspond ↗
-        </a>
-      </div>
-    </header>
-  );
-}
-
-/* ─── cover ─── */
-function Cover() {
-  return (
-    <section id="cover" className="relative min-h-screen pt-32 pb-20 px-8 lg:px-14">
-      <div className="max-w-[1500px] mx-auto h-full">
-        {/* top meta band */}
-        <div className="flex items-center justify-between border-t border-b border-[#1f2d24]/20 py-3 text-[10px] tracking-[0.35em] uppercase font-[Inter] text-[#1f2d24]/60">
-          <span>Vol. I · Anno {new Date().getFullYear()}</span>
-          <span className="hidden md:inline">Paintings · Verse · Memoranda</span>
-          <span>Edition of One</span>
-        </div>
-
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mt-16 lg:mt-24 items-end">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.2, 0.7, 0.2, 1] }} className="lg:col-span-7">
-            <p className="font-[Italianno] text-4xl text-[#c97b5e] leading-none mb-6">— the world of —</p>
-            <h1 className="font-[Cormorant_Garamond] font-light text-[clamp(4.5rem,13vw,12rem)] leading-[0.85] tracking-[-0.02em] text-[#1f2d24]">
-              Thanishka
-              <span className="block italic text-[#1f2d24]/85">Yogesh</span>
-            </h1>
-            <div className="mt-10 max-w-md">
-              <p className="font-[Cormorant_Garamond] italic text-xl text-[#1f2d24]/80 leading-snug">
-                A painter and poet, keeping a slow, ongoing record of colour, verse, and quiet things.
-              </p>
-              <div className="mt-8 flex items-center gap-6 text-[10px] tracking-[0.35em] uppercase font-[Inter] text-[#1f2d24]/60">
-                <a href="#works" className="hover:text-[#c97b5e] inline-flex items-center gap-2">Enter the works <ArrowUpRight className="h-3 w-3" /></a>
-                <span className="hidden sm:inline">est. {new Date().getFullYear() - 5}</span>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 0.3 }}
-            className="lg:col-span-5"
-          >
-            <figure className="relative">
-              <img src={heroPainting} alt="" className="w-full aspect-[3/4] object-cover" />
-              <div className="absolute inset-3 border border-[#e8e1d3]/40 pointer-events-none" />
-              <figcaption className="mt-3 flex items-baseline justify-between font-[Inter] text-[10px] tracking-[0.3em] uppercase text-[#1f2d24]/60">
-                <span>Frontispiece</span>
-                <span>Plate · 00</span>
-              </figcaption>
-            </figure>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── contents ─── */
-function Index_Contents() {
-  const rows = [
-    ["01", "Works", "Paintings & visual studies", "p. 012"],
-    ["02", "Poetry", "Pulled from the journal", "p. 048"],
-    ["03", "Publications", "Printed & featured", "p. 074"],
-    ["04", "Memories", "Notes from the studio", "p. 092"],
-    ["05", "Colophon", "On the maker", "p. 110"],
-  ];
-  return (
-    <section className="px-8 lg:px-14 py-24 border-y border-[#1f2d24]/15 bg-[#ddd3bd]/40">
-      <div className="max-w-[1500px] mx-auto grid lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-3">
-          <p className="font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/55">Table of</p>
-          <h2 className="font-[Cormorant_Garamond] italic text-6xl text-[#1f2d24] leading-none mt-2">Contents</h2>
-        </div>
-        <ul className="lg:col-span-9 divide-y divide-[#1f2d24]/20">
-          {rows.map(([n, t, s, p]) => (
-            <li key={n}>
-              <a href={`#${t.toLowerCase()}`} className="group grid grid-cols-12 items-baseline gap-4 py-6 hover:bg-[#e8e1d3]/60 transition-colors px-2 -mx-2">
-                <span className="col-span-2 sm:col-span-1 font-[Inter] text-[11px] tracking-[0.3em] text-[#c97b5e]">{n}</span>
-                <span className="col-span-6 sm:col-span-4 font-[Cormorant_Garamond] text-3xl text-[#1f2d24] group-hover:italic">{t}</span>
-                <span className="hidden sm:block sm:col-span-5 font-[Cormorant_Garamond] italic text-lg text-[#1f2d24]/70">{s}</span>
-                <span className="col-span-4 sm:col-span-2 text-right font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/55">{p}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ─── works ─── */
-function Works() {
-  const tiles = [
-    { span: "lg:col-span-7 lg:row-span-2", ratio: "aspect-[4/5]", n: "012", title: "Untitled (Window I)", medium: "Watercolour on cotton, 2024" },
-    { span: "lg:col-span-5", ratio: "aspect-[4/3]", n: "013", title: "After the Rain", medium: "Ink & wash, 2024" },
-    { span: "lg:col-span-5", ratio: "aspect-[4/3]", n: "014", title: "Half-Moons", medium: "Acrylic, 2023" },
-    { span: "lg:col-span-4", ratio: "aspect-[3/4]", n: "015", title: "Of Quiet Things", medium: "Mixed media, 2024" },
-    { span: "lg:col-span-4", ratio: "aspect-[3/4]", n: "016", title: "Study No. 7", medium: "Charcoal, 2023" },
-    { span: "lg:col-span-4", ratio: "aspect-[3/4]", n: "017", title: "She Listens", medium: "Oil on board, 2024" },
-  ];
-  return (
-    <section id="works" className="px-8 lg:px-14 py-32">
-      <div className="max-w-[1500px] mx-auto">
-        <SectionHead n="01" eyebrow="The Plates" title="Works" sub="A loose chronological selection. Each plate is part of an ongoing series; nothing here is finished, only paused." />
-        <div className="mt-16 grid lg:grid-cols-12 gap-6 lg:gap-8">
-          {tiles.map((t, i) => (
-            <motion.figure
-              key={i}
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.9, delay: i * 0.05 }}
-              className={`col-span-12 ${t.span}`}
-            >
-              <PlaceholderPlate ratio={t.ratio} />
-              <figcaption className="mt-4 flex items-baseline justify-between gap-4">
-                <div>
-                  <h3 className="font-[Cormorant_Garamond] italic text-2xl text-[#1f2d24]">{t.title}</h3>
-                  <p className="font-[Inter] text-[11px] tracking-[0.2em] uppercase text-[#1f2d24]/55 mt-1">{t.medium}</p>
-                </div>
-                <PlateNumber n={t.n} />
-              </figcaption>
-            </motion.figure>
-          ))}
-        </div>
-        <p className="mt-16 font-[Italianno] text-3xl text-[#c97b5e] text-center">— more plates forthcoming —</p>
-      </div>
-    </section>
-  );
-}
-
-/* ─── poetry plate (pull quote spread) ─── */
-function PoetryPlate() {
-  const poems = [
-    { title: "On Rainfall", body: "and the sky, too,\nwept softly that evening\nas if to keep me company." },
-    { title: "Half-Moons", body: "I keep your name\nin the folds of my palm,\nlike a half-remembered prayer." },
-    { title: "Of Quiet Things", body: "the kettle hums.\nthe window breathes.\nI am — for once — enough." },
-  ];
-  return (
-    <section id="poetry" className="relative bg-[#1f2d24] text-[#e8e1d3] py-32 px-8 lg:px-14 overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, #d4b25b 0, transparent 40%), radial-gradient(circle at 80% 70%, #c97b5e 0, transparent 45%)" }} />
+    <section className="relative px-6 lg:px-12 py-28">
+      <Splash className="absolute top-10 -left-32 w-[400px] text-[color:var(--sage)] opacity-60" />
       <div className="max-w-[1500px] mx-auto relative">
-        <SectionHead n="02" eyebrow="In Verse" title="Poetry" sub="Pulled in handwriting from a notebook kept since the rains of 2019." dark />
-        <div className="grid md:grid-cols-3 gap-12 mt-16">
-          {poems.map((p, i) => (
-            <motion.article
-              key={i}
-              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: i * 0.1 }}
-              className="border-t border-[#e8e1d3]/25 pt-8"
+        <SectionHead n="02" eyebrow="The Plates" title="Drawings & Artworks" sub="A curated selection from an ongoing body of 55+ works in pencil, watercolour, ink and acrylic." />
+        <div className="mt-16 grid grid-cols-12 gap-5 lg:gap-7">
+          {(items.length ? items : Array.from({ length: 6 }).map((_, i) => ({ id: String(i), title: "Awaiting upload", medium: "—", year: null, image_url: "", description: null, category: "paintings", display_order: i, is_featured: false }))).slice(0,6).map((t: any, i) => {
+            const spans = [
+              "col-span-12 md:col-span-7 row-span-2 aspect-[4/5]",
+              "col-span-12 md:col-span-5 aspect-[5/4]",
+              "col-span-6 md:col-span-5 aspect-[3/4]",
+              "col-span-6 md:col-span-4 aspect-[3/4]",
+              "col-span-6 md:col-span-4 aspect-[3/4]",
+              "col-span-12 md:col-span-4 aspect-[4/5]",
+            ];
+            return (
+              <motion.figure key={t.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.7, delay: i * 0.06 }} className={`${spans[i]} relative overflow-hidden group bg-[color:var(--beige)] rounded-sm shadow-[var(--shadow-frame)]`}>
+                {t.image_url ? (
+                  <img src={publicUrl("artworks", t.image_url)} alt={t.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                ) : (
+                  <div className="w-full h-full paper-texture flex items-center justify-center"><span className="font-script text-3xl text-[color:var(--terracotta)]">soon ✿</span></div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-[color:var(--ink)]/85 via-[color:var(--ink)]/30 to-transparent text-[color:var(--cream)] translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                  <p className="font-display italic text-xl">{t.title}</p>
+                  {t.medium && <p className="text-[10px] tracking-[0.3em] uppercase opacity-80">{t.medium}{t.year ? ` · ${t.year}` : ""}</p>}
+                </div>
+              </motion.figure>
+            );
+          })}
+        </div>
+        <div className="mt-12 text-center">
+          <Link to="/artworks" className="inline-flex items-center gap-2 font-display italic text-2xl text-[color:var(--terracotta)] hover:text-[color:var(--forest)]">
+            Enter the full gallery <ArrowUpRight className="h-5 w-5" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── poetry tease ── */
+function PoetryTease({ items }: { items: any[] }) {
+  const fallback = [
+    { id: "f1", title: "On Rainfall", excerpt: "and the sky, too,\nwept softly that evening\nas if to keep me company.", body: "" },
+    { id: "f2", title: "Half-Moons", excerpt: "I keep your name\nin the folds of my palm,\nlike a half-remembered prayer.", body: "" },
+    { id: "f3", title: "Of Quiet Things", excerpt: "the kettle hums.\nthe window breathes.\nI am — for once — enough.", body: "" },
+  ];
+  const list = items.length ? items : fallback;
+  return (
+    <section className="relative bg-[color:var(--forest)] text-[color:var(--cream)] py-28 px-6 lg:px-12 overflow-hidden">
+      <Floral className="absolute top-10 right-10 w-32 text-[color:var(--gold)]/40 animate-floaty" />
+      <Floral className="absolute bottom-10 left-10 w-40 text-[color:var(--terracotta)]/40 animate-floaty" style={{ animationDelay: "2s" }} />
+      <div className="max-w-[1500px] mx-auto relative">
+        <SectionHead n="03" eyebrow="In Verse" title="Poetry" sub="Journal pages pulled in handwriting." dark />
+        <div className="grid md:grid-cols-3 gap-10 mt-14">
+          {list.slice(0,3).map((p: any, i: number) => (
+            <motion.article key={p.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: i * 0.1 }}
+              className="relative bg-[color:var(--cream)] text-[color:var(--ink)] p-8 rounded-sm shadow-[var(--shadow-elegant)] paper-texture transition-transform duration-500 hover:-translate-y-2 hover:rotate-[-1deg]"
+              style={{ transform: `rotate(${i % 2 ? 1.5 : -1.5}deg)` }}
             >
-              <p className="font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#d4b25b]/80">No. 0{i + 1}</p>
-              <h3 className="font-[Cormorant_Garamond] italic text-3xl text-[#e8e1d3] mt-3 mb-6">{p.title}</h3>
-              <pre className="font-[Cormorant_Garamond] whitespace-pre-wrap text-2xl leading-snug text-[#e8e1d3]/90 italic">{p.body}</pre>
-              <p className="font-[Italianno] text-3xl text-[#d4b25b] mt-8">— T.</p>
+              <span className="tape" style={{ left: "50%", top: "-10px", marginLeft: "-35px" }} />
+              <p className="text-[10px] tracking-[0.35em] uppercase text-[color:var(--terracotta)]">No. 0{i + 1}</p>
+              <h3 className="font-display italic text-3xl mt-2 mb-5">{p.title}</h3>
+              <pre className="font-display whitespace-pre-wrap text-xl leading-snug italic">{(p.excerpt || p.body || "").slice(0, 220)}</pre>
+              <p className="font-script text-3xl text-[color:var(--terracotta)] mt-6 text-right">— T.</p>
             </motion.article>
           ))}
         </div>
+        <div className="mt-12 text-center">
+          <Link to="/poetry" className="inline-flex items-center gap-2 font-display italic text-2xl text-[color:var(--gold)] hover:text-[color:var(--cream)]">
+            Read more from the journal <ArrowUpRight className="h-5 w-5" />
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ─── publications ─── */
-function Publications() {
-  const rows = [
-    ["2024", "Featured Poet", "Anthology — Volume I", "Independent Press"],
-    ["2024", "Spread", "Magazine Feature", "Quarterly Journal"],
-    ["2023", "Cover Art", "Commissioned Work", "Private Publisher"],
-    ["2023", "Selected", "Group Showcase", "Online Exhibition"],
-  ];
+/* ── published tease ── */
+function PublishedTease({ items }: { items: any[] }) {
   return (
-    <section id="publications" className="px-8 lg:px-14 py-32">
+    <section className="relative px-6 lg:px-12 py-28">
       <div className="max-w-[1500px] mx-auto">
-        <SectionHead n="03" eyebrow="In Print" title="Publications" sub="Where the work has briefly left the studio." />
-        <div className="mt-12 border-t border-[#1f2d24]/25">
-          {rows.map((r, i) => (
-            <motion.a
-              key={i}
-              href="#"
-              initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: i * 0.05 }}
-              className="group grid grid-cols-12 items-baseline gap-4 py-8 border-b border-[#1f2d24]/20 hover:bg-[#ddd3bd]/40 px-2 -mx-2 transition-colors"
-            >
-              <span className="col-span-2 font-[Inter] text-[11px] tracking-[0.3em] text-[#c97b5e]">{r[0]}</span>
-              <span className="col-span-3 font-[Inter] text-[11px] tracking-[0.3em] uppercase text-[#1f2d24]/60">{r[1]}</span>
-              <span className="col-span-5 font-[Cormorant_Garamond] text-3xl italic text-[#1f2d24] group-hover:text-[#c97b5e]">{r[2]}</span>
-              <span className="col-span-1 font-[Cormorant_Garamond] text-lg italic text-[#1f2d24]/70 hidden lg:block">{r[3]}</span>
-              <span className="col-span-1 text-right"><ArrowUpRight className="h-5 w-5 inline text-[#1f2d24]/50 group-hover:text-[#c97b5e] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" /></span>
-            </motion.a>
+        <SectionHead n="04" eyebrow="Published Corner" title="In Print" sub="Newspapers, literary anthologies and featured publications — collected as keepsakes." />
+        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {(items.length ? items : Array.from({length: 4}).map((_,i) => ({id:String(i), title:"Coming soon", publication_name:"—", cover_url:""}))).slice(0,4).map((p: any, i) => (
+            <motion.div key={p.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: i * 0.08 }}
+              className="relative group">
+              <div className="aspect-[3/4] bg-[color:var(--beige)] paper-texture rounded-sm shadow-[var(--shadow-frame)] overflow-hidden">
+                {p.cover_url ? <img src={publicUrl("publications", p.cover_url)} alt={p.title} className="w-full h-full object-cover" /> : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                    <span className="text-[10px] tracking-[0.4em] uppercase text-[color:var(--terracotta)]">Archive</span>
+                    <span className="font-script text-4xl text-[color:var(--forest)] mt-2">soon</span>
+                  </div>
+                )}
+              </div>
+              <p className="mt-3 font-display italic text-xl text-[color:var(--forest)]">{p.title}</p>
+              <p className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--forest)]/55">{p.publication_name}</p>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── memories ─── */
-function Memories() {
-  const notes = [
-    "a quiet morning, the studio still smelling of turpentine.",
-    "first poem in print — i cried over chai.",
-    "the colour of the chennai sky in june, after the rain.",
-    "mother's handwriting on the back of an old painting.",
-    "the way light folds at 4pm in the studio.",
-    "an unfinished canvas, leaning against the wall for two years.",
-  ];
-  return (
-    <section id="memories" className="px-8 lg:px-14 py-32 bg-[#ddd3bd]/40 border-y border-[#1f2d24]/15">
-      <div className="max-w-[1500px] mx-auto">
-        <SectionHead n="04" eyebrow="From the Journal" title="Memoranda" sub="Loose paper. Small remembrances kept in the margins." />
-        <ul className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
-          {notes.map((n, i) => (
-            <motion.li
-              key={i}
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: i * 0.06 }}
-              className="border-l-2 border-[#c97b5e]/70 pl-6"
-            >
-              <p className="font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/50">No. {String(i + 1).padStart(2, "0")}</p>
-              <p className="font-[Cormorant_Garamond] italic text-2xl text-[#1f2d24] mt-2 leading-snug">{n}</p>
-            </motion.li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ─── colophon / contact ─── */
-function Colophon() {
-  return (
-    <section id="colophon" className="px-8 lg:px-14 py-32">
-      <div className="max-w-[1500px] mx-auto grid lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-5">
-          <figure>
-            <img src={heroPortrait} alt="Thanishka Yogesh" className="w-full aspect-[4/5] object-cover grayscale-[20%]" />
-            <figcaption className="mt-3 font-[Inter] text-[10px] tracking-[0.3em] uppercase text-[#1f2d24]/55 flex justify-between">
-              <span>The Maker</span><span>Portrait · 01</span>
-            </figcaption>
-          </figure>
-        </div>
-        <div className="lg:col-span-7">
-          <SectionHead n="05" eyebrow="Colophon" title="On the Maker" sub="" />
-          <div className="mt-10 space-y-6 max-w-xl">
-            <p className="font-[Cormorant_Garamond] italic text-2xl text-[#1f2d24] leading-snug">
-              "I paint the things I cannot say out loud."
-            </p>
-            <p className="font-[Inter] text-[15px] leading-[1.8] text-[#1f2d24]/80">
-              <span className="font-[Italianno] text-2xl text-[#c97b5e]">[ replace with your real bio ]</span> — a few quiet
-              paragraphs about where you come from, what your practice means to you, the recurring themes you keep returning to.
-            </p>
-            <p className="font-[Inter] text-[15px] leading-[1.8] text-[#1f2d24]/80">
-              For commissions, exhibitions, or simply to write back — letters are welcome and read slowly.
-            </p>
-
-            <div className="mt-10 grid sm:grid-cols-2 gap-6 border-t border-[#1f2d24]/20 pt-8">
-              <a href="mailto:hello@thanishka.art" className="group">
-                <p className="font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/55">By Letter</p>
-                <p className="font-[Cormorant_Garamond] italic text-2xl text-[#1f2d24] group-hover:text-[#c97b5e] mt-1 inline-flex items-center gap-2">
-                  <Mail className="h-4 w-4" /> hello@thanishka.art
-                </p>
-              </a>
-              <a href="#" className="group">
-                <p className="font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/55">By Image</p>
-                <p className="font-[Cormorant_Garamond] italic text-2xl text-[#1f2d24] group-hover:text-[#c97b5e] mt-1 inline-flex items-center gap-2">
-                  <Instagram className="h-4 w-4" /> @thanishka.yogesh
-                </p>
-              </a>
-            </div>
-          </div>
+        <div className="mt-10 text-center">
+          <Link to="/published" className="inline-flex items-center gap-2 font-display italic text-2xl text-[color:var(--terracotta)] hover:text-[color:var(--forest)]">
+            Visit the Published Corner <ArrowUpRight className="h-5 w-5" />
+          </Link>
         </div>
       </div>
-
-      <footer className="max-w-[1500px] mx-auto mt-32 border-t border-[#1f2d24]/25 pt-6 flex flex-wrap items-baseline justify-between gap-4 font-[Inter] text-[10px] tracking-[0.35em] uppercase text-[#1f2d24]/55">
-        <span>© {new Date().getFullYear()} Thanishka Yogesh</span>
-        <span className="font-[Italianno] text-2xl normal-case tracking-normal text-[#c97b5e]">made slowly, with colour & care</span>
-        <span>Monograph No. 01 · End</span>
-      </footer>
     </section>
   );
 }
 
-function SectionHead({ n, eyebrow, title, sub, dark = false }: { n: string; eyebrow: string; title: string; sub: string; dark?: boolean }) {
+/* ── polaroid scrapbook strip ── */
+function PolaroidStrip() {
+  return (
+    <section className="relative px-6 lg:px-12 py-28 bg-[color:var(--beige)]/60 border-y border-[color:var(--forest)]/15 overflow-hidden">
+      <Divider label="from the scrapbook" />
+      <div className="max-w-[1500px] mx-auto flex flex-wrap justify-center gap-10 items-end mt-8">
+        {[
+          { src: portraitAsset.url, c: "in the green house ✿", r: -7 },
+          { c: "studio mornings · turpentine & chai", r: 4 },
+          { c: "first poem in print — I cried", r: -3 },
+          { src: portraitAsset.url, c: "summer of ferns", r: 6 },
+          { c: "the unfinished canvas, still waiting", r: -5 },
+        ].map((p, i) => (
+          <Polaroid key={i} src={p.src} caption={p.c} rotate={p.r} className="w-52" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ── closing ── */
+function ClosingCard() {
+  return (
+    <section className="relative px-6 lg:px-12 py-28">
+      <div className="max-w-3xl mx-auto text-center relative">
+        <Sparkle className="absolute -top-4 left-1/4 w-5 text-[color:var(--gold)] animate-pulse" />
+        <Sparkle className="absolute top-10 right-1/4 w-4 text-[color:var(--terracotta)] animate-pulse" />
+        <p className="font-script text-5xl text-[color:var(--terracotta)]">— a closing note —</p>
+        <p className="font-display italic text-3xl md:text-4xl leading-snug text-[color:var(--forest)] mt-6">
+          "Every piece of art begins with curiosity. Every poem with a feeling. And every story deserves to be shared."
+        </p>
+        <InkSwirl className="w-72 mx-auto mt-8 text-[color:var(--terracotta)]" />
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Link to="/about" className="px-7 py-3 rounded-full border border-[color:var(--forest)]/40 font-display italic text-lg hover:bg-[color:var(--forest)] hover:text-[color:var(--cream)] transition-colors">Read my story</Link>
+          <Link to="/contact" className="px-7 py-3 rounded-full bg-[color:var(--terracotta)] text-[color:var(--cream)] font-display italic text-lg hover:bg-[color:var(--forest)] transition-colors">Write to me</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SectionHead({ n, eyebrow, title, sub, dark = false }: { n: string; eyebrow: string; title: string; sub?: string; dark?: boolean }) {
   return (
     <div className="grid lg:grid-cols-12 gap-6 items-end">
       <div className="lg:col-span-3">
-        <p className={`font-[Inter] text-[10px] tracking-[0.35em] uppercase ${dark ? "text-[#d4b25b]/80" : "text-[#c97b5e]"}`}>
-          Section · {n}
-        </p>
-        <p className={`font-[Inter] text-[10px] tracking-[0.35em] uppercase mt-2 ${dark ? "text-[#e8e1d3]/55" : "text-[#1f2d24]/55"}`}>{eyebrow}</p>
+        <p className={`text-[10px] tracking-[0.35em] uppercase ${dark ? "text-[color:var(--gold)]" : "text-[color:var(--terracotta)]"}`}>Section · {n}</p>
+        <p className={`text-[10px] tracking-[0.35em] uppercase mt-2 ${dark ? "text-[color:var(--cream)]/55" : "text-[color:var(--forest)]/55"}`}>{eyebrow}</p>
       </div>
       <div className="lg:col-span-6">
-        <h2 className={`font-[Cormorant_Garamond] font-light text-[clamp(3rem,7vw,6rem)] leading-[0.9] tracking-[-0.02em] ${dark ? "text-[#e8e1d3]" : "text-[#1f2d24]"}`}>
+        <h2 className={`font-display font-light text-[clamp(2.75rem,6vw,5.5rem)] leading-[0.95] tracking-tight ${dark ? "text-[color:var(--cream)]" : "text-[color:var(--forest)]"}`}>
           {title}
         </h2>
       </div>
       {sub && (
         <div className="lg:col-span-3">
-          <p className={`font-[Cormorant_Garamond] italic text-lg leading-snug ${dark ? "text-[#e8e1d3]/75" : "text-[#1f2d24]/70"}`}>
-            {sub}
-          </p>
+          <p className={`font-display italic text-lg leading-snug ${dark ? "text-[color:var(--cream)]/75" : "text-[color:var(--forest)]/70"}`}>{sub}</p>
         </div>
       )}
     </div>
