@@ -222,5 +222,4 @@
     opacity: .4;
   }
   .divider-leaf { display: flex; align-items: center; gap: 1rem; color: var(--forest); }
-  }
 }
