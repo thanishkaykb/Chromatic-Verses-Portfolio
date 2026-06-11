@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublishedRouteImport } from './routes/published'
 import { Route as PoetryRouteImport } from './routes/poetry'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArtworksRouteImport } from './routes/artworks'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -31,9 +33,19 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArtworksRoute = ArtworksRouteImport.update({
   id: '/artworks',
   path: '/artworks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -50,7 +62,9 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/artworks': typeof ArtworksRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/poetry': typeof PoetryRoute
   '/published': typeof PublishedRoute
@@ -58,7 +72,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/artworks': typeof ArtworksRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/poetry': typeof PoetryRoute
   '/published': typeof PublishedRoute
@@ -67,7 +83,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/artworks': typeof ArtworksRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/poetry': typeof PoetryRoute
   '/published': typeof PublishedRoute
@@ -77,17 +95,29 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/artworks'
+    | '/auth'
     | '/contact'
     | '/poetry'
     | '/published'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/artworks' | '/contact' | '/poetry' | '/published'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/artworks'
+    | '/auth'
+    | '/contact'
+    | '/poetry'
+    | '/published'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/artworks'
+    | '/auth'
     | '/contact'
     | '/poetry'
     | '/published'
@@ -96,7 +126,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   ArtworksRoute: typeof ArtworksRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   PoetryRoute: typeof PoetryRoute
   PublishedRoute: typeof PublishedRoute
@@ -125,11 +157,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/artworks': {
       id: '/artworks'
       path: '/artworks'
       fullPath: '/artworks'
       preLoaderRoute: typeof ArtworksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -152,7 +198,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   ArtworksRoute: ArtworksRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   PoetryRoute: PoetryRoute,
   PublishedRoute: PublishedRoute,
@@ -160,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
