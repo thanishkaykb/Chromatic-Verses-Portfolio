@@ -34,6 +34,7 @@ export type Publication = {
   category: string | null;
   cover_url: string;
   file_url: string | null;
+  link_url: string | null;
   is_featured: boolean;
   display_order: number;
 };

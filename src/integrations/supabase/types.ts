@@ -207,6 +207,7 @@ export type Database = {
           file_url: string | null
           id: string
           is_featured: boolean
+          link_url: string | null
           publication_date: string | null
           publication_name: string | null
           title: string
@@ -221,6 +222,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_featured?: boolean
+          link_url?: string | null
           publication_date?: string | null
           publication_name?: string | null
           title: string
@@ -235,6 +237,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_featured?: boolean
+          link_url?: string | null
           publication_date?: string | null
           publication_name?: string | null
           title?: string

@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import portraitAsset from "@/assets/portrait-garden.jpg.asset.json";
-import { Floral, Leaf, Splash, InkSwirl, Sparkle, Divider } from "@/components/site/decor";
+import paintingAsset from "@/assets/painting-photo.jpg.asset.json";
+import { InkSwirl, Sparkle, Divider, Flower, FlowerBed } from "@/components/site/decor";
 import { Polaroid } from "@/components/site/polaroid";
 import { useArtworks, usePoems, usePublications, publicUrl } from "@/lib/data";
 

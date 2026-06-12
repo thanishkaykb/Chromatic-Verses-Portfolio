@@ -31,8 +31,8 @@ export function SiteNav() {
     >
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
         <Link to="/" className="flex items-baseline gap-2 group">
-          <span className="font-script text-4xl leading-none text-[color:var(--forest)] group-hover:text-[color:var(--terracotta)] transition-colors">Thanishka</span>
-          <span className="hidden sm:inline text-[9px] tracking-[0.4em] uppercase text-[color:var(--forest)]/55">— a creative universe</span>
+          <span className="font-script text-4xl leading-none text-[color:var(--forest)] group-hover:text-[color:var(--terracotta)] transition-colors whitespace-nowrap">Thanishka&nbsp;Yogesh</span>
+          <span className="hidden md:inline text-[9px] tracking-[0.4em] uppercase text-[color:var(--forest)]/55">— Chromatic Verses</span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7">
@@ -74,18 +74,19 @@ export function SiteFooter() {
     <footer className="relative mt-32 border-t border-[color:var(--forest)]/15 bg-[color:var(--cream)]/60">
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 py-14 grid md:grid-cols-3 gap-10">
         <div>
-          <p className="font-script text-5xl text-[color:var(--forest)] leading-none">Thanishka</p>
+          <p className="font-script text-5xl text-[color:var(--forest)] leading-none">Thanishka Yogesh</p>
           <p className="font-display italic text-lg text-[color:var(--forest)]/70 mt-2">a slow record of colour & verse.</p>
         </div>
         <div className="text-sm space-y-1.5 text-[color:var(--forest)]/80">
           <p className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--terracotta)] mb-2">Wander</p>
           {LINKS.map(l => <Link key={l.to} to={l.to} className="block hover:text-[color:var(--terracotta)]">{l.label}</Link>)}
+          <Link to="/admin" className="block text-[color:var(--forest)]/25 hover:text-[color:var(--terracotta)] text-xs mt-3" aria-label="Studio (admin)">·&nbsp;studio</Link>
         </div>
         <div className="text-sm space-y-1.5 text-[color:var(--forest)]/80">
           <p className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--terracotta)] mb-2">Write to me</p>
           <a href="mailto:thanishka.ykb@gmail.com" className="block hover:text-[color:var(--terracotta)]">thanishka.ykb@gmail.com</a>
           <a href="tel:+919025658705" className="block hover:text-[color:var(--terracotta)]">+91 90256 58705</a>
-          <a href="https://www.instagram.com/art_by_thanishka" target="_blank" rel="noreferrer" className="block hover:text-[color:var(--terracotta)]">@art_by_thanishka</a>
+          <a href="https://www.instagram.com/art_by_thanishka?igsh=MWNoemkxY2Q0NzB3OQ==" target="_blank" rel="noreferrer" className="block hover:text-[color:var(--terracotta)]">@art_by_thanishka</a>
         </div>
       </div>
       <div className="border-t border-[color:var(--forest)]/15 py-5 text-center text-[10px] tracking-[0.35em] uppercase text-[color:var(--forest)]/55">
