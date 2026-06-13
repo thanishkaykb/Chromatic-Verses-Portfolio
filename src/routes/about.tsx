@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import portrait from "@/assets/portrait-garden.jpg.asset.json";
 import { Floral, Leaf, InkSwirl, Divider } from "@/components/site/decor";
 import { Polaroid } from "@/components/site/polaroid";
+import { useSiteContent, siteText, siteList } from "@/lib/data";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -28,7 +29,20 @@ const FACTS = [
   ["📚", "Lifelong Learner"],
 ];
 
+const DEFAULT_PARAS = [
+  "For as long as I can remember, I have been drawn to creativity. Whether through colors on a canvas, words on a page, or ideas brought to life by hand, creating has always been my way of understanding the world around me. Every artwork, poem, and handmade creation begins as a thought, a feeling, or a moment that leaves an impression on me and eventually finds its place in my work.",
+  "Art allows me to express emotions that cannot always be spoken. Poetry gives a voice to thoughts that often remain hidden. Together, they have become the two most meaningful ways through which I share my perspective, experiences, and imagination.",
+  "Over the years, my creative journey has expanded beyond personal expression. My poetry has been featured in newspapers and literary anthologies, giving me the opportunity to connect with readers and share my work with a wider audience. Each publication has become a reminder that creativity has the power to resonate with people in ways we may never expect.",
+  "Alongside my artistic pursuits, I am pursuing a degree in Computer Science and Engineering. While technology and art may appear to belong to different worlds, I see them as complementary forms of creation. One is built through logic and innovation, while the other is shaped by emotion and imagination. Together, they inspire me to explore new possibilities and creative experiences.",
+  "Nature, human emotions, memories, stories, and everyday moments often serve as the inspiration behind my work. I find beauty in details that are easily overlooked and enjoy transforming them into something meaningful through art and poetry.",
+  "This portfolio is a reflection of my journey so far. It brings together my artworks, published writings, handmade creations, and the experiences that continue to shape me as a creator. More than a collection of work, it is a space where creativity, curiosity, and self-expression come together.",
+  "Thank you for taking the time to visit my world. I hope you find something here that inspires you, speaks to you, or simply makes you pause for a moment and see things differently.",
+];
+
 function AboutPage() {
+  const { data: content } = useSiteContent();
+  const intro = siteText(content, "about_intro", "An artist, published poet, creator, and Computer Science and Engineering student at Sri Sairam Engineering College.");
+  const paragraphs = siteList(content, "about_paragraphs", DEFAULT_PARAS);
   return (
     <div className="relative overflow-hidden">
       {/* hero */}
@@ -49,7 +63,7 @@ function AboutPage() {
               Hello,<br/>I'm <span className="italic text-gold-shimmer">Thanishka.</span>
             </h1>
             <p className="mt-6 font-display italic text-2xl text-[color:var(--forest)]/85 leading-snug max-w-2xl">
-              An artist, published poet, creator, and Computer Science and Engineering student at Sri Sairam Engineering College.
+              {intro}
             </p>
             <InkSwirl className="w-72 mt-6 text-[color:var(--terracotta)]" />
           </motion.div>
@@ -61,15 +75,7 @@ function AboutPage() {
       {/* prose */}
       <section className="px-6 lg:px-12 pb-20">
         <div className="max-w-3xl mx-auto space-y-6 font-display text-xl leading-[1.8] text-[color:var(--ink)]/90">
-          {[
-            "For as long as I can remember, I have been drawn to creativity. Whether through colors on a canvas, words on a page, or ideas brought to life by hand, creating has always been my way of understanding the world around me. Every artwork, poem, and handmade creation begins as a thought, a feeling, or a moment that leaves an impression on me and eventually finds its place in my work.",
-            "Art allows me to express emotions that cannot always be spoken. Poetry gives a voice to thoughts that often remain hidden. Together, they have become the two most meaningful ways through which I share my perspective, experiences, and imagination.",
-            "Over the years, my creative journey has expanded beyond personal expression. My poetry has been featured in newspapers and literary anthologies, giving me the opportunity to connect with readers and share my work with a wider audience. Each publication has become a reminder that creativity has the power to resonate with people in ways we may never expect.",
-            "Alongside my artistic pursuits, I am pursuing a degree in Computer Science and Engineering. While technology and art may appear to belong to different worlds, I see them as complementary forms of creation. One is built through logic and innovation, while the other is shaped by emotion and imagination. Together, they inspire me to explore new possibilities and creative experiences.",
-            "Nature, human emotions, memories, stories, and everyday moments often serve as the inspiration behind my work. I find beauty in details that are easily overlooked and enjoy transforming them into something meaningful through art and poetry.",
-            "This portfolio is a reflection of my journey so far. It brings together my artworks, published writings, handmade creations, and the experiences that continue to shape me as a creator. More than a collection of work, it is a space where creativity, curiosity, and self-expression come together.",
-            "Thank you for taking the time to visit my world. I hope you find something here that inspires you, speaks to you, or simply makes you pause for a moment and see things differently.",
-          ].map((p, i) => (
+          {paragraphs.map((p, i) => (
             <motion.p key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: i * 0.03 }}>
               {i === 0 && <span className="float-left font-display italic text-7xl leading-none text-[color:var(--terracotta)] mr-3 mt-1">{p[0]}</span>}
               {i === 0 ? p.slice(1) : p}

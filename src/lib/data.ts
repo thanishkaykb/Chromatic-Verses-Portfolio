@@ -121,3 +121,29 @@ export function useMemories() {
     },
   });
 }
+
+/* ── editable site content (key/value JSON store) ───────── */
+export type SiteContentMap = Record<string, any>;
+export function useSiteContent() {
+  return useQuery({
+    queryKey: ["site_content"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("site_content").select("key,value");
+      if (error) throw error;
+      const map: SiteContentMap = {};
+      (data ?? []).forEach((r: any) => { map[r.key] = r.value; });
+      return map;
+    },
+  });
+}
+export function siteText(map: SiteContentMap | undefined, key: string, fallback: string): string {
+  const v = map?.[key];
+  if (typeof v === "string") return v;
+  if (v && typeof v === "object" && typeof v.value === "string") return v.value;
+  return fallback;
+}
+export function siteList(map: SiteContentMap | undefined, key: string, fallback: string[]): string[] {
+  const v = map?.[key];
+  if (Array.isArray(v)) return v.filter((x) => typeof x === "string");
+  return fallback;
+}

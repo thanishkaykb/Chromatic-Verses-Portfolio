@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import paintingAsset from "@/assets/painting-photo.jpg.asset.json";
+import paintingAsset from "@/assets/painting-photo-v2.jpg.asset.json";
 import { InkSwirl, Sparkle, Divider, Flower } from "@/components/site/decor";
 import { Polaroid } from "@/components/site/polaroid";
-import { useArtworks, usePoems, usePublications, publicUrl } from "@/lib/data";
+import { useArtworks, usePoems, usePublications, useMemories, publicUrl } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,6 +23,7 @@ function Index() {
   const arts = useArtworks();
   const poems = usePoems();
   const pubs = usePublications();
+  const mems = useMemories();
   return (
     <div className="overflow-x-hidden">
       <Cover />
@@ -30,7 +31,7 @@ function Index() {
       <FeaturedWorks items={arts.data?.slice(0, 6) ?? []} />
       <PoetryTease items={poems.data?.slice(0, 3) ?? []} />
       <PublishedTease items={pubs.data?.slice(0, 4) ?? []} />
-      <PolaroidStrip />
+      <PolaroidStrip items={mems.data ?? []} />
       <ClosingCard />
     </div>
   );
@@ -223,19 +224,27 @@ function PublishedTease({ items }: { items: any[] }) {
 }
 
 /* ── polaroid scrapbook strip ── */
-function PolaroidStrip() {
+function PolaroidStrip({ items }: { items: any[] }) {
+  const fallback = [
+    { id: "f1", image_url: paintingAsset.url, caption: "at the easel ✿", rotation: -7 },
+    { id: "f2", caption: "studio mornings · turpentine & chai", rotation: 4 },
+    { id: "f3", caption: "first poem in print — I cried", rotation: -3 },
+    { id: "f4", image_url: paintingAsset.url, caption: "summer of ferns", rotation: 6 },
+    { id: "f5", caption: "the unfinished canvas, still waiting", rotation: -5 },
+  ];
+  const list = items.length ? items : fallback;
   return (
     <section className="relative px-6 lg:px-12 py-28 bg-[color:var(--beige)]/60 border-y border-[color:var(--forest)]/15 overflow-hidden">
       <Divider label="from the scrapbook" />
       <div className="max-w-[1500px] mx-auto flex flex-wrap justify-center gap-10 items-end mt-8">
-        {[
-          { src: paintingAsset.url, c: "at the easel ✿", r: -7 },
-          { c: "studio mornings · turpentine & chai", r: 4 },
-          { c: "first poem in print — I cried", r: -3 },
-          { src: paintingAsset.url, c: "summer of ferns", r: 6 },
-          { c: "the unfinished canvas, still waiting", r: -5 },
-        ].map((p, i) => (
-          <Polaroid key={i} src={p.src} caption={p.c} rotate={p.r} className="w-52" />
+        {list.map((p: any) => (
+          <Polaroid
+            key={p.id}
+            src={p.image_url ? publicUrl("memories", p.image_url) : undefined}
+            caption={p.caption ?? ""}
+            rotate={Number(p.rotation) || 0}
+            className="w-52"
+          />
         ))}
       </div>
     </section>

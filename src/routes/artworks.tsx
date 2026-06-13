@@ -5,6 +5,24 @@ import { X } from "lucide-react";
 import { useArtworks, publicUrl, type Artwork } from "@/lib/data";
 import { Floral, Leaf, Splash, Sparkle, Divider } from "@/components/site/decor";
 
+/* Bento layout pattern (matches the reference mosaic). 13 tiles per chunk.
+   Each entry is a tailwind class applied on a 12-col grid. */
+const BENTO: string[] = [
+  "col-span-3 row-span-1 aspect-square",          // 1 small top-left
+  "col-span-3 row-span-2 aspect-[3/4]",           // 2 tall
+  "col-span-3 row-span-1 aspect-[4/3]",           // 3
+  "col-span-3 row-span-1 aspect-square",          // 4
+  "col-span-2 row-span-1 aspect-square",          // 5
+  "col-span-4 row-span-2 aspect-[4/3]",           // 6 BIG centre
+  "col-span-3 row-span-1 aspect-[4/3]",           // 7
+  "col-span-3 row-span-1 aspect-[4/3]",           // 8
+  "col-span-2 row-span-1 aspect-square",          // 9
+  "col-span-3 row-span-1 aspect-square",          // 10
+  "col-span-3 row-span-1 aspect-[4/3]",           // 11
+  "col-span-3 row-span-1 aspect-square",          // 12
+  "col-span-3 row-span-1 aspect-[3/4]",           // 13
+];
+
 export const Route = createFileRoute("/artworks")({
   head: () => ({
     meta: [
@@ -60,25 +78,25 @@ function ArtworksPage() {
           ) : list.length === 0 ? (
             <EmptyGallery />
           ) : (
-            <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
-              {list.map((a, i) => (
-                <motion.button
-                  key={a.id}
-                  initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-30px" }} transition={{ duration: 0.6, delay: (i % 8) * 0.04 }}
-                  onClick={() => setOpen(a)}
-                  className="break-inside-avoid block w-full text-left group relative bg-[color:var(--ivory)] p-3 pb-12 rounded-sm shadow-[var(--shadow-frame)] hover:-translate-y-1 transition-all duration-500"
-                  style={{ transform: `rotate(${((i * 13) % 5 - 2) * 0.6}deg)` }}
-                >
-                  <div className="overflow-hidden bg-[color:var(--beige)]">
-                    <img src={publicUrl("artworks", a.image_url)} alt={a.title} loading="lazy" className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
-                  </div>
-                  <div className="mt-3 flex items-baseline justify-between gap-2">
-                    <span className="font-hand text-xl text-[color:var(--ink)] truncate">{a.title}</span>
-                    {a.year && <span className="text-[10px] tracking-[0.3em] text-[color:var(--forest)]/55">{a.year}</span>}
-                  </div>
-                  {a.is_featured && <Sparkle className="absolute top-1 right-1 w-4 text-[color:var(--gold)] animate-pulse" />}
-                </motion.button>
-              ))}
+            <div className="grid grid-cols-6 lg:grid-cols-12 auto-rows-[110px] md:auto-rows-[160px] lg:auto-rows-[180px] gap-4 lg:gap-5">
+              {list.map((a, i) => {
+                const span = BENTO[i % BENTO.length];
+                return (
+                  <motion.button
+                    key={a.id}
+                    initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-30px" }} transition={{ duration: 0.55, delay: (i % 6) * 0.05 }}
+                    onClick={() => setOpen(a)}
+                    className={`${span} relative group overflow-hidden bg-[color:var(--beige)] rounded-sm shadow-[var(--shadow-frame)] hover:shadow-[var(--shadow-elegant)] transition-all`}
+                  >
+                    <img src={publicUrl("artworks", a.image_url)} alt={a.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-x-0 bottom-0 p-3 lg:p-4 bg-gradient-to-t from-[color:var(--ink)]/90 via-[color:var(--ink)]/30 to-transparent text-[color:var(--cream)] opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                      <p className="font-display italic text-lg lg:text-xl leading-tight truncate">{a.title}</p>
+                      {(a.medium || a.year) && <p className="text-[9px] tracking-[0.3em] uppercase opacity-80 truncate">{a.medium}{a.year ? ` · ${a.year}` : ""}</p>}
+                    </div>
+                    {a.is_featured && <Sparkle className="absolute top-2 right-2 w-4 text-[color:var(--gold)] animate-pulse" />}
+                  </motion.button>
+                );
+              })}
             </div>
           )}
           <p className="mt-16 text-center font-script text-3xl text-[color:var(--terracotta)]">— more works always in progress —</p>
