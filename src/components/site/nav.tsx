@@ -80,7 +80,7 @@ export function SiteFooter() {
         <div className="text-sm space-y-1.5 text-[color:var(--forest)]/80">
           <p className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--terracotta)] mb-2">Wander</p>
           {LINKS.map(l => <Link key={l.to} to={l.to} className="block hover:text-[color:var(--terracotta)]">{l.label}</Link>)}
-          <Link to="/admin" className="block text-[color:var(--forest)]/25 hover:text-[color:var(--terracotta)] text-xs mt-3" aria-label="Studio (admin)">·&nbsp;studio</Link>
+          <Link to="/admin" className="inline-block mt-4 px-3 py-1.5 rounded-full border border-[color:var(--terracotta)]/40 text-[color:var(--terracotta)] hover:bg-[color:var(--terracotta)] hover:text-[color:var(--cream)] text-xs tracking-[0.25em] uppercase transition-colors">Studio Login →</Link>
         </div>
         <div className="text-sm space-y-1.5 text-[color:var(--forest)]/80">
           <p className="text-[10px] tracking-[0.3em] uppercase text-[color:var(--terracotta)] mb-2">Write to me</p>

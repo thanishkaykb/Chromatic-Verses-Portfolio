@@ -1,11 +1,11 @@
 /* Watercolor decorative elements — painted flowers, not SVG leaves. */
 import type { CSSProperties } from "react";
-import sunflower from "@/assets/flower-sunflower.png.asset.json";
-import peony from "@/assets/flower-peony.png.asset.json";
-import bougainvillea from "@/assets/flower-bougainvillea.png.asset.json";
-import goldshower from "@/assets/flower-goldshower.png.asset.json";
-import rose from "@/assets/flower-rose.png.asset.json";
-import lilac from "@/assets/flower-lilac.png.asset.json";
+import sunflower from "@/assets/wc-sunflower.png.asset.json";
+import peony from "@/assets/wc-peony.png.asset.json";
+import bougainvillea from "@/assets/wc-bougainvillea.png.asset.json";
+import goldshower from "@/assets/wc-goldshower.png.asset.json";
+import rose from "@/assets/wc-rose.png.asset.json";
+import lilac from "@/assets/wc-lilac.png.asset.json";
 
 const FLOWER_MAP = {
   sunflower: sunflower.url,
