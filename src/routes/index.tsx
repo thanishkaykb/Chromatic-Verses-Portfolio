@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import paintingAsset from "@/assets/painting-photo.jpg.asset.json";
-import { InkSwirl, Sparkle, Divider, Flower, FlowerBed } from "@/components/site/decor";
+import { InkSwirl, Sparkle, Divider, Flower } from "@/components/site/decor";
 import { Polaroid } from "@/components/site/polaroid";
 import { useArtworks, usePoems, usePublications, publicUrl } from "@/lib/data";
 
@@ -43,12 +43,13 @@ function Index() {
 function Cover() {
   return (
     <section className="relative min-h-[92vh] pt-12 pb-20 px-6 lg:px-12 overflow-hidden">
-      {/* decorative scatter */}
-      <Leaf className="absolute -left-10 top-10 w-44 text-[color:var(--sage)]/55 animate-floaty" style={{ ["--r" as any]: "-12deg", transform: "rotate(-12deg)" }} />
-      <Leaf className="absolute right-4 top-32 w-32 text-[color:var(--forest)]/35 animate-floaty" style={{ ["--r" as any]: "20deg", transform: "rotate(20deg)", animationDelay: "1.5s" }} />
-      <Floral className="absolute left-1/3 top-6 w-20 text-[color:var(--rose)]/55 animate-floaty" />
-      <Splash className="absolute -bottom-20 -right-20 w-[420px] text-[color:var(--terracotta)]" />
-      <Sparkle className="absolute top-24 left-1/2 w-4 text-[color:var(--gold)] animate-pulse" />
+      {/* big floating watercolor flowers — pinned to corners so they never cover text */}
+      <Flower kind="sunflower" className="absolute -left-24 -top-16 w-[22rem] md:w-[26rem] z-0" rotate={-14} opacity={0.85} />
+      <Flower kind="bougainvillea" className="absolute -right-20 top-24 w-[20rem] md:w-[24rem] z-0" rotate={18} opacity={0.8} style={{ animationDelay: "1.5s" }} />
+      <Flower kind="goldshower" className="absolute -left-16 bottom-0 w-[18rem] md:w-[22rem] z-0" rotate={-6} opacity={0.85} style={{ animationDelay: "2.4s" }} />
+      <Flower kind="peony" className="absolute -right-12 -bottom-16 w-[22rem] md:w-[26rem] z-0" rotate={12} opacity={0.85} style={{ animationDelay: "0.8s" }} />
+      <Flower kind="lilac" className="hidden md:block absolute right-1/3 -top-10 w-40 z-0" rotate={8} opacity={0.7} />
+      <Sparkle className="absolute top-24 left-1/2 w-4 text-[color:var(--gold)] animate-pulse z-0" />
 
       <div className="max-w-[1500px] mx-auto relative">
         <div className="flex items-center justify-between border-y border-[color:var(--forest)]/20 py-3 text-[10px] tracking-[0.35em] uppercase text-[color:var(--forest)]/65">
@@ -57,10 +58,10 @@ function Cover() {
           <span>Edition of One</span>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mt-12 lg:mt-16 items-center">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mt-12 lg:mt-16 items-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="lg:col-span-7 relative">
             <p className="font-script text-5xl text-[color:var(--terracotta)] leading-none mb-4">— welcome to the world of —</p>
-            <h1 className="font-display font-light text-[clamp(4rem,12vw,10.5rem)] leading-[0.85] tracking-tight text-[color:var(--forest)]">
+            <h1 className="font-display font-light text-[clamp(3rem,9vw,8rem)] leading-[0.88] tracking-tight text-[color:var(--forest)]">
               Thanishka
               <span className="block italic text-gold-shimmer">Yogesh</span>
             </h1>
@@ -80,12 +81,12 @@ function Cover() {
 
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.1, delay: 0.2 }} className="lg:col-span-5 relative">
             <div className="relative">
-              <Floral className="absolute -top-10 -left-10 w-24 text-[color:var(--gold)]/70 animate-floaty" />
-              <Floral className="absolute -bottom-8 -right-8 w-28 text-[color:var(--coral)]/60 animate-floaty" style={{ animationDelay: "2s" }} />
+              <Flower kind="rose" className="absolute -top-12 -left-10 w-32 z-10" rotate={-12} opacity={0.9} />
+              <Flower kind="lilac" className="absolute -bottom-10 -right-10 w-36 z-10" rotate={10} opacity={0.9} style={{ animationDelay: "2s" }} />
               <figure className="relative">
-                <img src={portraitAsset.url} alt="Thanishka in the garden" className="w-full aspect-[4/5] object-cover rounded-sm shadow-[var(--shadow-frame)]" />
+                <img src={paintingAsset.url} alt="Thanishka painting in her studio" className="w-full aspect-[4/5] object-cover rounded-sm shadow-[var(--shadow-frame)]" />
                 <div className="absolute inset-3 border border-[color:var(--cream)]/40 pointer-events-none" />
-                <Polaroid src={portraitAsset.url} caption="in the green house ✿" rotate={-8} className="!absolute -bottom-10 -left-12 w-40 hidden md:inline-block" />
+                <Polaroid src={paintingAsset.url} caption="at the easel ✿" rotate={-8} className="!absolute -bottom-10 -left-12 w-40 hidden md:inline-block" />
               </figure>
             </div>
           </motion.div>
@@ -111,7 +112,8 @@ function Marquee() {
 function FeaturedWorks({ items }: { items: ReturnType<typeof useArtworks>["data"] extends infer T ? T extends Array<infer U> ? U[] : never : never }) {
   return (
     <section className="relative px-6 lg:px-12 py-28">
-      <Splash className="absolute top-10 -left-32 w-[400px] text-[color:var(--sage)] opacity-60" />
+      <Flower kind="goldshower" className="absolute top-10 -left-24 w-[22rem] z-0" rotate={-10} opacity={0.6} />
+      <Flower kind="peony" className="absolute bottom-10 -right-20 w-[20rem] z-0" rotate={12} opacity={0.55} />
       <div className="max-w-[1500px] mx-auto relative">
         <SectionHead n="02" eyebrow="The Plates" title="Drawings & Artworks" sub="A curated selection from an ongoing body of 55+ works in pencil, watercolour, ink and acrylic." />
         <div className="mt-16 grid grid-cols-12 gap-5 lg:gap-7">
@@ -159,8 +161,8 @@ function PoetryTease({ items }: { items: any[] }) {
   const list = items.length ? items : fallback;
   return (
     <section className="relative bg-[color:var(--forest)] text-[color:var(--cream)] py-28 px-6 lg:px-12 overflow-hidden">
-      <Floral className="absolute top-10 right-10 w-32 text-[color:var(--gold)]/40 animate-floaty" />
-      <Floral className="absolute bottom-10 left-10 w-40 text-[color:var(--terracotta)]/40 animate-floaty" style={{ animationDelay: "2s" }} />
+      <Flower kind="sunflower" className="absolute -top-12 -right-12 w-72 z-0" rotate={14} opacity={0.5} />
+      <Flower kind="bougainvillea" className="absolute -bottom-10 -left-10 w-72 z-0" rotate={-12} opacity={0.5} style={{ animationDelay: "2s" }} />
       <div className="max-w-[1500px] mx-auto relative">
         <SectionHead n="03" eyebrow="In Verse" title="Poetry" sub="Journal pages pulled in handwriting." dark />
         <div className="grid md:grid-cols-3 gap-10 mt-14">
@@ -227,10 +229,10 @@ function PolaroidStrip() {
       <Divider label="from the scrapbook" />
       <div className="max-w-[1500px] mx-auto flex flex-wrap justify-center gap-10 items-end mt-8">
         {[
-          { src: portraitAsset.url, c: "in the green house ✿", r: -7 },
+          { src: paintingAsset.url, c: "at the easel ✿", r: -7 },
           { c: "studio mornings · turpentine & chai", r: 4 },
           { c: "first poem in print — I cried", r: -3 },
-          { src: portraitAsset.url, c: "summer of ferns", r: 6 },
+          { src: paintingAsset.url, c: "summer of ferns", r: 6 },
           { c: "the unfinished canvas, still waiting", r: -5 },
         ].map((p, i) => (
           <Polaroid key={i} src={p.src} caption={p.c} rotate={p.r} className="w-52" />
