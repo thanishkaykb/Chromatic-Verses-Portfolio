@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Trash2, Upload, LogOut, Plus } from "lucide-react";
-import { useArtworks, usePoems, usePublications, publicUrl } from "@/lib/data";
+import { useArtworks, usePoems, usePublications, useMemories, useSiteContent, publicUrl } from "@/lib/data";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Thanishka" }, { name: "robots", content: "noindex" }] }),
@@ -56,6 +56,8 @@ function AdminPage() {
         <ArtworkManager />
         <PoemManager />
         <PublicationManager />
+        <MemoryManager />
+        <SiteTextManager />
       </div>
     </div>
   );
@@ -290,4 +292,137 @@ function FileField({ label = "File", onChange, accept, current }: { label?: stri
       {current && <span className="text-xs text-[color:var(--forest)]/60 truncate">{current}</span>}
       <Upload className="h-4 w-4 text-[color:var(--forest)]/40" />
     </div></label>);
+}
+
+/* ---------- scrapbook / memories ---------- */
+function MemoryManager() {
+  const qc = useQueryClient();
+  const { data = [] } = useMemories();
+  const [f, setF] = useState({ caption: "", note: "", rotation: "0" });
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function add(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) return toast.error("Please choose an image");
+    setBusy(true);
+    try {
+      const path = await uploadFile("memories", file);
+      const { error } = await supabase.from("memories").insert({
+        image_url: path, caption: f.caption || null, note: f.note || null,
+        rotation: Number(f.rotation) || 0, display_order: data.length,
+      } as any);
+      if (error) throw error;
+      toast.success("Scrapbook entry added");
+      setF({ caption: "", note: "", rotation: "0" }); setFile(null);
+      qc.invalidateQueries({ queryKey: ["memories"] });
+    } catch (e: any) { toast.error(e.message); } finally { setBusy(false); }
+  }
+  async function del(id: string) {
+    if (!confirm("Delete this memory?")) return;
+    const { error } = await supabase.from("memories").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["memories"] }); toast.success("Removed");
+  }
+
+  return (
+    <Section title={`Scrapbook (${data.length})`}>
+      <form onSubmit={add} className="space-y-3">
+        <Field label="Caption" value={f.caption} onChange={v => setF({ ...f, caption: v })} />
+        <Area label="Note (optional)" value={f.note} onChange={v => setF({ ...f, note: v })} rows={2} />
+        <Field label="Rotation (deg, e.g. -4)" value={f.rotation} onChange={v => setF({ ...f, rotation: v })} />
+        <FileField label="Photo" onChange={setFile} accept="image/*" current={file?.name} />
+        <button disabled={busy} className="inline-flex items-center gap-2 bg-[color:var(--forest)] text-[color:var(--cream)] px-5 py-2 rounded-full text-sm hover:bg-[color:var(--terracotta)] disabled:opacity-60">
+          {busy ? "uploading…" : (<><Plus className="h-4 w-4" /> add to scrapbook</>)}
+        </button>
+      </form>
+      <ul className="mt-6 max-h-72 overflow-y-auto divide-y divide-[color:var(--forest)]/10">
+        {data.map(m => (
+          <li key={m.id} className="py-2 flex items-center gap-3">
+            <img src={publicUrl("memories", m.image_url)} className="h-12 w-12 object-cover rounded-sm" alt="" />
+            <div className="flex-1 min-w-0">
+              <p className="font-display italic text-base truncate">{m.caption || "(untitled)"}</p>
+              {m.note && <p className="text-xs text-[color:var(--forest)]/55 truncate">{m.note}</p>}
+            </div>
+            <button onClick={() => del(m.id)} className="p-2 text-[color:var(--forest)]/50 hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+/* ---------- site text (About intro, paragraphs, etc) ---------- */
+const TEXT_FIELDS: { key: string; label: string; multiline?: boolean; list?: boolean; placeholder?: string }[] = [
+  { key: "about_intro", label: "About — intro line", multiline: true, placeholder: "An artist, published poet…" },
+  { key: "about_paragraphs", label: "About — story paragraphs (one paragraph per line, blank lines separate)", list: true },
+  { key: "hero_eyebrow", label: "Homepage — eyebrow line", placeholder: "— welcome to the world of —" },
+  { key: "hero_tagline", label: "Homepage — tagline", multiline: true },
+  { key: "closing_quote", label: "Homepage — closing quote", multiline: true },
+];
+
+function SiteTextManager() {
+  const qc = useQueryClient();
+  const { data = {} } = useSiteContent();
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+
+  function valueFor(key: string, list: boolean): string {
+    if (draft[key] !== undefined) return draft[key];
+    const v = (data as any)[key];
+    if (list && Array.isArray(v)) return v.join("\n\n");
+    if (typeof v === "string") return v;
+    return "";
+  }
+
+  async function save(key: string, list: boolean) {
+    setBusy(key);
+    const raw = valueFor(key, list);
+    const value: any = list ? raw.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean) : raw;
+    const { error } = await supabase.from("site_content").upsert({ key, value } as any);
+    setBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success("Saved");
+    setDraft(d => { const { [key]: _, ...rest } = d; return rest; });
+    qc.invalidateQueries({ queryKey: ["site_content"] });
+  }
+
+  return (
+    <Section title="Site text (About, hero, etc.)">
+      <div className="space-y-5">
+        {TEXT_FIELDS.map(({ key, label, multiline, list, placeholder }) => {
+          const v = valueFor(key, !!list);
+          return (
+            <div key={key}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase text-[color:var(--forest)]/65 mb-1">{label}</label>
+              {multiline || list ? (
+                <textarea
+                  rows={list ? 10 : 3}
+                  value={v}
+                  placeholder={placeholder}
+                  onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}
+                  className="w-full bg-[color:var(--cream)]/50 border border-[color:var(--forest)]/20 focus:border-[color:var(--terracotta)] outline-none p-2 text-sm rounded-sm resize-y"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={v}
+                  placeholder={placeholder}
+                  onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}
+                  className="w-full bg-transparent border-b border-[color:var(--forest)]/30 focus:border-[color:var(--terracotta)] outline-none py-1.5 text-sm"
+                />
+              )}
+              <button
+                onClick={() => save(key, !!list)}
+                disabled={busy === key}
+                className="mt-2 inline-flex items-center gap-2 bg-[color:var(--forest)] text-[color:var(--cream)] px-4 py-1.5 rounded-full text-xs hover:bg-[color:var(--terracotta)] disabled:opacity-60"
+              >
+                {busy === key ? "saving…" : "save"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  );
 }
