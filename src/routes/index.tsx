@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import paintingAsset from "@/assets/painting-photo.jpg.asset.json";
+import paintingAsset from "@/assets/painting-photo-v2.jpg.asset.json";
 import { InkSwirl, Sparkle, Divider, Flower } from "@/components/site/decor";
 import { Polaroid } from "@/components/site/polaroid";
 import { useArtworks, usePoems, usePublications, publicUrl } from "@/lib/data";
