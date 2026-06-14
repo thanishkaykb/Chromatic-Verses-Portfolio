@@ -154,12 +154,8 @@ function FeaturedWorks({ items }: { items: ReturnType<typeof useArtworks>["data"
 
 /* ── poetry tease ── */
 function PoetryTease({ items }: { items: any[] }) {
-  const fallback = [
-    { id: "f1", title: "On Rainfall", excerpt: "and the sky, too,\nwept softly that evening\nas if to keep me company.", body: "" },
-    { id: "f2", title: "Half-Moons", excerpt: "I keep your name\nin the folds of my palm,\nlike a half-remembered prayer.", body: "" },
-    { id: "f3", title: "Of Quiet Things", excerpt: "the kettle hums.\nthe window breathes.\nI am — for once — enough.", body: "" },
-  ];
-  const list = items.length ? items : fallback;
+  if (!items.length) return null;
+  const list = items;
   return (
     <section className="relative bg-[color:var(--forest)] text-[color:var(--cream)] py-28 px-6 lg:px-12 overflow-hidden">
       <Flower kind="sunflower" className="absolute -top-12 -right-12 w-72 z-0" rotate={14} opacity={0.5} />
